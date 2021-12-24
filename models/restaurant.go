@@ -7,8 +7,8 @@ import (
 
 type Restaurant struct {
 	ID        uint           `json:"id" gorm:"primaryKey"`
-	Name      string         `json:"name" gorm:"size:14"`
-	Cnpj      string         `json:"cnpj"`
+	Name      string         `json:"name"`
+	Cnpj      string         `json:"cnpj" gorm:"size:14"`
 	IsOpen    bool           `json:"is_open"`
 	CreatedAt time.Time      `json:"created"`
 	UpdatedAt time.Time      `json:"updated"`
@@ -17,4 +17,8 @@ type Restaurant struct {
 
 type RestaurantRepository interface {
 	All() ([]Restaurant)
+	Find(id int) (Restaurant)
+	Delete(id int) (Restaurant)
+	Update(id int) (Restaurant)
+	Create(id int) (Restaurant)
 }

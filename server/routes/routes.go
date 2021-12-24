@@ -21,6 +21,9 @@ func ConfigRoutes(router *gin.Engine, db *gorm.DB) *gin.Engine {
 		restaurants := main.Group("restaurants")
 		{
 			restaurants.GET("/", c.IndexRestaurants)
+			restaurants.GET("/:id", c.GetRestaurant)
+			restaurants.POST("/", c.CreateRestaurant)
+			restaurants.DELETE("/:id", c.DeleteRestaurant)
 		}
 	}
 	return router
