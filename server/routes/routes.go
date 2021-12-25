@@ -1,17 +1,29 @@
 package routes
 
 import (
-	"pedy/controllers"
-
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"pedy/controllers"
+	"pedy/repositories"
 )
 
-func ConfigRoutes(router *gin.Engine) *gin.Engine {
+func ConfigRoutes(router *gin.Engine, db *gorm.DB) *gin.Engine {
+	c := controllers.BaseController{
+		RestaurantRepo: repositories.NewRestaurantRepository(db),
+	}
+
 	main := router.Group("api/v1")
 	{
 		users := main.Group("users")
 		{
 			users.POST("/", controllers.NewUser)
+		}
+		restaurants := main.Group("restaurants")
+		{
+			restaurants.GET("/", c.IndexRestaurants)
+			restaurants.GET("/:id", c.GetRestaurant)
+			restaurants.POST("/", c.CreateRestaurant)
+			restaurants.DELETE("/:id", c.DeleteRestaurant)
 		}
 	}
 	return router
