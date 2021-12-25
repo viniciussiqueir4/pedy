@@ -16,7 +16,7 @@ func ConfigRoutes(router *gin.Engine, db *gorm.DB) *gin.Engine {
 	{
 		users := main.Group("users")
 		{
-			users.GET("/", controllers.NewUser)
+			users.POST("/", controllers.NewUser)
 		}
 		restaurants := main.Group("restaurants")
 		{
