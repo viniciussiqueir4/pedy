@@ -12,9 +12,10 @@ type User struct {
 	ID        uint           `json:"id" gorm:"primaryKey"`
 	Name      string         `json:"name" gorm:"not null" validate:"required,min=2"`
 	Email     string         `json:"email" gorm:"not null;unique" validate:"required,email"`
-	Password  string         `json:"password" gorm:"not null" validate:"required,min=6"`
+	Password  string         `json:"password,omitempty" gorm:"not null" validate:"required,min=6"`
 	Cellphone string         `json:"cellphone" gorm:"not null" validate:"required,min=11"`
 	Cpf       string         `json:"cpf" gorm:"not null;unique" validate:"required,min=11"`
+	ImageUrl  string         `json:"image_url"`
 	CreatedAt time.Time      `json:"created"`
 	UpdatedAt time.Time      `json:"updated"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted"`

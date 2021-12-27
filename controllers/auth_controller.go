@@ -3,13 +3,13 @@ package controllers
 import (
 	"pedy/controllers/base"
 	"pedy/repositories"
-	"pedy/services/user"
+	"pedy/services/auth"
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewUser(c *gin.Context) {
-	var dto user.UserDto
+func Auth(c *gin.Context) {
+	var dto auth.AuthDto
 
 	err := c.ShouldBindJSON(&dto)
 	if err != nil {
@@ -22,9 +22,10 @@ func NewUser(c *gin.Context) {
 	}
 
 	repo := &repositories.UserRepository{}
-	service := user.NewUserService(repo)
+	service := auth.NewAuthService(repo)
 
-	result, err := service.CreateUser(dto)
+	result, err := service.Auth(dto)
+
 	if err != nil {
 		c.JSON(400, base.Presenter(
 			false,
@@ -39,10 +40,4 @@ func NewUser(c *gin.Context) {
 		[]string{},
 		result,
 	))
-}
-
-func GetUserById(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "Ok",
-	})
 }
