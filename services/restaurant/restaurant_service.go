@@ -1,6 +1,7 @@
 package restaurant
 
 import (
+	"fmt"
 	"gorm.io/gorm"
 	"net/http"
 	"pedy/common"
@@ -52,6 +53,7 @@ func (s RestaurantService) Update(restaurant RestaurantDTO, id int) (models.Rest
 		Cnpj:   restaurant.Cnpj,
 		IsOpen: restaurant.IsOpen,
 	}
+	fmt.Println(updateRestaurant)
 	err := updateRestaurant.Validate()
 	if err != nil {
 		return updateRestaurant,  common.HttpError{

@@ -95,5 +95,5 @@ func (r RestaurantRepository) Update(newData models.Restaurant, idToUpdate int) 
 		}
 	}
 
-	return newData, common.HttpError{}
+	return find, common.HttpError{}
 }

@@ -35,7 +35,7 @@ func (b BaseController) CreateRestaurant(c *gin.Context) {
 	if err != nil {
 		b.JsonErrors(common.HttpError{
 			StatusCode: http.StatusBadRequest,
-			Errors:     []error{errors.New("Invalid data provided")},
+			Errors:    []error{errors.New("Invalid data provided: " + err.Error())},
 		}, c)
 		return
 	}
@@ -59,7 +59,7 @@ func (b BaseController) UpdateRestaurant(c *gin.Context) {
 	if errBind != nil {
 		b.JsonErrors(common.HttpError{
 			StatusCode: http.StatusBadRequest,
-			Errors:     []error{errors.New("Invalid data provided")},
+			Errors:     []error{errors.New("Invalid data provided: " + errBind.Error())},
 		}, c)
 		return
 	}
