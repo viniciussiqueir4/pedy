@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"errors"
 	"pedy/database"
 	"pedy/models"
 )
@@ -26,7 +27,7 @@ func (s *UserRepository) GetByEmail(email string) (models.User, error) {
 	err := db.First(&user, "email = ?", email).Error
 
 	if err != nil {
-		return models.User{}, err
+		return models.User{}, errors.New("Invalid credentials")
 	}
 
 	return user, nil

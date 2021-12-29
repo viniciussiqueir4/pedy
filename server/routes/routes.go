@@ -1,10 +1,13 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"pedy/controllers"
 	"pedy/repositories"
+
+	"pedy/server/middlewares"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func ConfigRoutes(router *gin.Engine, db *gorm.DB) *gin.Engine {
@@ -17,6 +20,11 @@ func ConfigRoutes(router *gin.Engine, db *gorm.DB) *gin.Engine {
 		users := main.Group("users")
 		{
 			users.POST("/", controllers.NewUser)
+			users.GET("/", middlewares.Auth(), controllers.GetUserById)
+		}
+		auth := main.Group("auth")
+		{
+			auth.POST("/", controllers.Auth)
 		}
 		restaurants := main.Group("restaurants")
 		{
