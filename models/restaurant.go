@@ -7,18 +7,21 @@ import (
 
 type Restaurant struct {
 	ID        uint           `json:"id" gorm:"primaryKey"`
-	Name      string         `json:"name"`
-	Cnpj      string         `json:"cnpj" gorm:"size:14"`
+	Name      string         `json:"name" gorm:"not null" validate:"required,max=255"`
+	Cnpj      string         `json:"cnpj" gorm:"not null;size:14;unique" validate:"required,min=14,max=14"`
 	IsOpen    bool           `json:"is_open"`
 	CreatedAt time.Time      `json:"created"`
 	UpdatedAt time.Time      `json:"updated"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted"`
 }
 
-type RestaurantRepository interface {
-	All() ([]Restaurant)
-	Find(id int) (Restaurant)
-	Delete(id int) (Restaurant)
-	Update(id int) (Restaurant)
-	Create(id int) (Restaurant)
+func (r Restaurant) Validate() []error {
+	err, trans := SetValidationPtBr()
+	if err != nil {
+		newErr := []error{err}
+		return newErr
+	}
+	err = Validate.Struct(r)
+	errs := TranslateError(err, trans)
+	return errs
 }

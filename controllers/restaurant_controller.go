@@ -3,76 +3,91 @@ package controllers
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
-	"pedy/models"
-	"strconv"
-	"time"
+	"pedy/common"
+	"pedy/services/restaurant"
 )
 
 func (b BaseController) IndexRestaurants(c *gin.Context) {
-	c.JSON(200, gin.H{"data": b.RestaurantRepo.All()})
+	c.JSON(200, gin.H{"data": b.RestaurantService.All()})
 }
 
 func (b BaseController) GetRestaurant(c *gin.Context) {
-	id := c.Param("id")
-	errParameter := errors.New("Invalid parameter.")
-	if id == ""{
-		b.JsonError(http.StatusBadRequest, errParameter, c)
+	number, err := b.GetIntParam("id", c)
+	if err.StatusCode != 0 {
+		b.JsonErrors(err, c)
 		return
 	}
-	number, err := strconv.Atoi(id)
-	if err != nil {
-		b.JsonError(http.StatusBadRequest, errParameter, c)
-		return
-	}
-	restaurant, err := b.RestaurantRepo.Find(number)
-	if err != nil{
-		b.JsonError(http.StatusNotFound, err, c)
+	foundRestaurant, err := b.RestaurantService.Find(number)
+	if err.StatusCode != 0 {
+		b.JsonErrors(err, c)
 		return
 	}
 	c.JSON(200, gin.H{
-		"data": restaurant,
+		"data": foundRestaurant,
 	})
 }
-//TODO: finish create with validations
+
+
 func (b BaseController) CreateRestaurant(c *gin.Context) {
-	create, err := b.RestaurantRepo.Create(models.Restaurant{
-		Name:      "xd",
-		Cnpj:      "123456789123456798",
-		IsOpen:    false,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
-		DeletedAt: gorm.DeletedAt{},
-	})
+	var dto restaurant.RestaurantDTO
+	err := c.ShouldBindJSON(&dto)
 	if err != nil {
-		b.JsonError(http.StatusBadRequest, err, c)
+		b.JsonErrors(common.HttpError{
+			StatusCode: http.StatusBadRequest,
+			Errors:    []error{errors.New("Invalid data provided: " + err.Error())},
+		}, c)
 		return
 	}
+	create, errs := b.RestaurantService.Create(dto)
+	if errs.StatusCode != 0 {
+		b.JsonErrors(errs, c)
+		return
+	}
+
 	c.JSON(http.StatusOK, create)
 }
 
+func (b BaseController) UpdateRestaurant(c *gin.Context) {
+	id, err := b.GetIntParam("id", c)
+	if err.StatusCode != 0 {
+		b.JsonErrors(err, c)
+		return
+	}
+	var dto restaurant.RestaurantDTO
+	errBind := c.ShouldBindJSON(&dto)
+	if errBind != nil {
+		b.JsonErrors(common.HttpError{
+			StatusCode: http.StatusBadRequest,
+			Errors:     []error{errors.New("Invalid data provided: " + errBind.Error())},
+		}, c)
+		return
+	}
+	updated, errorsUpdt := b.RestaurantService.Update(dto, id)
+	if errorsUpdt.StatusCode != 0 {
+		b.JsonErrors(errorsUpdt, c)
+		return
+	}
+
+	c.JSON(http.StatusOK, updated)
+}
+
 func (b BaseController) DeleteRestaurant(c *gin.Context) {
-	id := c.Param("id")
-	errParameter := errors.New("Invalid parameter.")
-	if id == ""{
-		b.JsonError(http.StatusBadRequest, errParameter, c)
+	id, err := b.GetIntParam("id", c)
+	if err.StatusCode != 0 {
+		b.JsonErrors(err, c)
 		return
 	}
-	number, err := strconv.Atoi(id)
-	if err != nil {
-		b.JsonError(http.StatusBadRequest, errParameter, c)
+
+	find, err := b.RestaurantService.Find(id)
+	if err.StatusCode != 0 {
+		b.JsonErrors(err, c)
 		return
 	}
-	find, err := b.RestaurantRepo.Find(number)
-	if err != nil {
-		b.JsonError(http.StatusNotFound, err, c)
+	deletedRestaurant, err := b.RestaurantService.Delete(find)
+	if err.StatusCode != 0 {
+		b.JsonErrors(err, c)
 		return
 	}
-	restaurant, err := b.RestaurantRepo.Delete(find)
-	if err != nil {
-		b.JsonError(http.StatusBadRequest, err, c)
-		return
-	}
-	c.JSON(http.StatusOK, restaurant)
+	c.JSON(http.StatusOK, deletedRestaurant)
 }

@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"pedy/controllers"
-	"pedy/repositories"
+	"pedy/services/restaurant"
 )
 
 func ConfigRoutes(router *gin.Engine, db *gorm.DB) *gin.Engine {
 	c := controllers.BaseController{
-		RestaurantRepo: repositories.NewRestaurantRepository(db),
+		RestaurantService: restaurant.NewRestaurantService(db),
 	}
 
 	main := router.Group("api/v1")
@@ -23,6 +23,7 @@ func ConfigRoutes(router *gin.Engine, db *gorm.DB) *gin.Engine {
 			restaurants.GET("/", c.IndexRestaurants)
 			restaurants.GET("/:id", c.GetRestaurant)
 			restaurants.POST("/", c.CreateRestaurant)
+			restaurants.PUT("/:id", c.UpdateRestaurant)
 			restaurants.DELETE("/:id", c.DeleteRestaurant)
 		}
 	}

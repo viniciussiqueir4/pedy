@@ -9,6 +9,8 @@ import (
 	"pedy/server/routes"
 )
 
+
+
 type Server struct {
 	port           string
 	server         *gin.Engine
@@ -28,4 +30,5 @@ func (s *Server) Run() {
 	log.Printf("Server running at port: %v", s.port)
 	log.Fatal(router.Run(":" + s.port))
 }
+
 
