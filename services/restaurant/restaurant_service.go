@@ -1,7 +1,7 @@
 package restaurant
 
 import (
-	"fmt"
+	"errors"
 	"gorm.io/gorm"
 	"net/http"
 	"pedy/common"
@@ -32,6 +32,20 @@ func (s RestaurantService) Create(restaurant RestaurantDTO) (models.Restaurant, 
 		Cnpj:   restaurant.Cnpj,
 		IsOpen: restaurant.IsOpen,
 	}
+
+	existentCnpj, httpError := s.repository.FindByCnpj(restaurant.Cnpj)
+
+	if httpError.StatusCode != 0 {
+		return existentCnpj, httpError
+	}
+
+	if existentCnpj.ID != 0 {
+		return newRestaurant, common.HttpError{
+			StatusCode: http.StatusBadRequest,
+			Errors:     []error{errors.New("Cnpj already exists.")},
+		}
+	}
+
 	err := newRestaurant.Validate()
 	if err != nil {
 		return newRestaurant, common.HttpError{
@@ -53,7 +67,19 @@ func (s RestaurantService) Update(restaurant RestaurantDTO, id int) (models.Rest
 		Cnpj:   restaurant.Cnpj,
 		IsOpen: restaurant.IsOpen,
 	}
-	fmt.Println(updateRestaurant)
+	existentCnpj, httpError := s.repository.FindByCnpj(restaurant.Cnpj)
+
+	if httpError.StatusCode != 0 {
+		return existentCnpj, httpError
+	}
+
+	if existentCnpj.ID != 0 {
+		return updateRestaurant, common.HttpError{
+			StatusCode: http.StatusBadRequest,
+			Errors:     []error{errors.New("Cnpj already exists.")},
+		}
+	}
+
 	err := updateRestaurant.Validate()
 	if err != nil {
 		return updateRestaurant,  common.HttpError{

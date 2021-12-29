@@ -8,6 +8,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/spf13/viper v1.10.1
+	github.com/stretchr/testify v1.7.0 // indirect
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.4

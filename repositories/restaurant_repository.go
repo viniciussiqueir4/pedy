@@ -97,3 +97,16 @@ func (r RestaurantRepository) Update(newData models.Restaurant, idToUpdate int) 
 
 	return find, common.HttpError{}
 }
+
+func (r RestaurantRepository) FindByCnpj(cnpj string) (models.Restaurant, common.HttpError) {
+	var foundRestaurant models.Restaurant
+	result := r.DB.Where("cnpj = ?", cnpj).First(&foundRestaurant)
+	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+		return foundRestaurant, common.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Errors:     []error{result.Error},
+		}
+	}
+
+	return foundRestaurant, common.HttpError{}
+}
