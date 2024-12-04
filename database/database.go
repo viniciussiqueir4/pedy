@@ -15,7 +15,7 @@ import (
 
 var db *gorm.DB
 
-func StartDatabase() {
+func StartDatabase() *gorm.DB {
 	DbHost := config.GetConfig().DatabaseHost
 	DbPort := config.GetConfig().DatabasePort
 	DbUser := config.GetConfig().DatabaseUser
@@ -46,6 +46,7 @@ func StartDatabase() {
 	config.SetConnMaxLifetime(time.Hour)
 
 	migrations.RunAutoMigrations(db)
+	return db
 }
 
 func CloseConn() error {
